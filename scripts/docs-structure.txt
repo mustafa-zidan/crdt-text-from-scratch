@@ -1,0 +1,70 @@
+docs/
+  00-README.md
+
+  01-crdt-intro/
+    01-overview.md
+    02-crdt-models.md
+    03-common-properties.md
+    04-real-world-uses.md
+
+  02-conflict-modeling/
+    00-README.md
+    01-framework.md
+    scenarios/
+      01-add-add.md
+      02-add-remove.md
+      03-out-of-order.md
+      04-partition-merge.md
+      05-tombstone-drift.md
+      06-causal-violations.md
+      07-sequence-position-conflicts.md
+    simulations/
+      01-add-add.kts
+      02-add-remove.kts
+      03-vector-clock-delay.kts
+      04-partition-scenario.kts
+
+  03-sequence-crdts/
+    00-README.md
+    01-rga.md
+    02-logoot.md
+    03-lseq.md
+    04-comparison.md
+    05-ordering-models.md
+
+  04-crdt-design/
+    01-concept.md
+    02-position-modeling.md
+    03-merge-strategy.md
+    04-gc-and-tombstones.md
+
+  05-crdt-implementation/
+    01-kotlin-core.md
+    02-integration-issues.md
+    03-test-coverage.md
+    04-limitations.md
+
+  06-editor-integration/
+    01-react-integration.md
+    02-websocket-architecture.md
+    03-offline-handling.md
+
+  07-library-comparison/
+    01-yjs.md
+    02-automerge.md
+    03-comparison-matrix.md
+
+  08-benchmarks/
+    01-test-methodology.md
+    02-scenarios.md
+    03-results.md
+    04-analysis.md
+
+  09-lessons-learned/
+    01-patterns-observed.md
+    02-architecture-hindsight.md
+    03-future-ideas.md
+
+  99-dev-log/
+    01-crdt-mastery-roadmap.md
+    glossary.md
