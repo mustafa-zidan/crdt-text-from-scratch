@@ -11,16 +11,15 @@ This project is a personal learning journey into the world of CRDTs (Conflict-fr
 
 All milestone notes and technical write-ups are in the [docs](./docs) folder.
 
-- [01 - Intro to CRDTs](./docs/01-intro-to-crdts.md)
-- [02 - Designing My CRDT](./docs/02-crdt-design.md)
-- [03 - Implementing It](./docs/03-crdt-implementation.md)
-- [04 - Editor Integration](./docs/04-editor-integration.md)
-- [05 - Comparing with Yjs/Automerge](./docs/05-yjs-automerge-comparison.md)
-- [06 - Benchmarks](./docs/06-benchmarks.md)
-- [07 - Lessons Learned](./docs/07-lessons-learned.md)
-- [Dev Notes (working log)](./docs/99-dev-notes.md)
-
-## Structure
+- [CRDT Intro](./docs/01-crdt-intro): Introduction to CRDTs and their types, common properties, and use cases.
+- [Conflict Modeling](./docs/02-conflict-modeling): Exploring different types of conflicts in CRDTs and how to handle them.
+- [CRDT Sequence](./docs/03-crdt-sequence): Detailed exploration of sequence CRDTs, their properties, and design considerations.
+- [CRDT Design](./docs/04-crdt-design): Design decisions and considerations for building a sequence CRDT.
+- [CRDT Implementation](./docs/05-crdt-implementation): Implementation details and code structure for the sequence CRDT.
+- [Editor Integration](./docs/06-editor-integration): Integrating the CRDT with a text editor for real-time collaboration.
+- [Library Comparison](./docs/07-library-comparison): Comparing the implemented CRDT with existing libraries in terms of performance and correctness.
+- [Benchmarks](./docs/08-benchmarks): Performance benchmarks of the implemented CRDT against existing libraries.
+- [Lessons Learned](./docs/09-lessons-learned): Reflections on the learning journey, challenges faced, and key takeaways.
 
 ## Goals
 
