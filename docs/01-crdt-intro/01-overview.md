@@ -78,6 +78,10 @@ CRDTs solve many challenges of eventual consistency by allowing multiple replica
 - **Commutativity:** The order of operations doesn’t affect the final outcome.
 - **Associativity:** Grouping of operations doesn’t impact the result.
 
+### CRDT Types
+- **State-based CRDTs (CvRDTs):** Merge the entire state of replicas to resolve conflicts.
+- **Operation-based CRDTs (CmRDTs):** Send operations to other replicas, which apply them to their local state.
+
 ### Reading suggestions:
 - [Wikipedia: Conflict-free replicated data type](https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type)
 - [Conflict Resolution for Eventual Consistency • Martin Kleppmann • GOTO 2016](https://www.youtube.com/watch?v=yCcWpzY8dIA&ab_channel=GOTOConferences)
