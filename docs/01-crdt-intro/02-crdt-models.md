@@ -29,7 +29,7 @@ The merge rule for CvRDTs is based on finding the **Least Upper Bound (LUB)** of
 - The merged state must be greater than or equal to both input states (C >= A and C >= B).
 - It must be the **smallest** state satisfying this condition.
 - Mathematically, the merged state is expressed as:  
-  **C = A join B**
+  `C = A join B`
 
 ```mermaid
 flowchart TD
