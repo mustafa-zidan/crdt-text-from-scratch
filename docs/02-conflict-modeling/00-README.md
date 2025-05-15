@@ -1,6 +1,7 @@
 # 🔥 Conflict Modeling in CRDTs
 
-This document outlines key conflict scenarios in distributed systems and how various CRDT types approach them. It serves as a simulation journal and pattern catalog.
+This document outlines key conflict scenarios in distributed systems and how various CRDT types approach them. It serves
+as a simulation journal and pattern catalog.
 
 ---
 
@@ -30,18 +31,20 @@ This document outlines key conflict scenarios in distributed systems and how var
 > - You don’t design robustness—you design for the **failure path**
 
 ### Mental hook:
+
 > Convergence is only meaningful when conflict is present. The absence of coordination *is* the system’s challenge.
 
 ---
 
 ## Modeling Framework
 
->  What to define here:
+> What to define here:
 > - What your **node model** is (e.g., local state + op log)
 > - What your **delivery model** is (e.g., async, unreliable, no total ordering)
 > - How you simulate **time** and **causality** (e.g., vector clocks, timestamps)
 
 ### Mental hook:
+
 > You’re not building a system—you’re building a lab to **stress-test** causal logic.
 
 ---
@@ -57,9 +60,9 @@ This document outlines key conflict scenarios in distributed systems and how var
 - Simulate: two nodes adding `x` at the same key/index
 - Model: do they converge to a stable state?
 - CRDT Handling:
-   - CvRDT: merge via set union
-   - CmRDT: relies on commutative op replay
-   - Sequence CRDT: needs tie-breaker logic (e.g., nodeId, timestamp)
+    - CvRDT: merge via set union
+    - CmRDT: relies on commutative op replay
+    - Sequence CRDT: needs tie-breaker logic (e.g., nodeId, timestamp)
 
 ---
 
