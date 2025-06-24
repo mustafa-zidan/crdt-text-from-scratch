@@ -77,29 +77,6 @@ Mathematically: If S₁ is a state that transitions to S₂, then S₁ ≤ S₂ 
   both input states
 - In version vectors, the logical clock for each replica can only advance forward
 
-## Strong Eventual Consistency (SEC)
-
-**Definition**: Strong Eventual Consistency guarantees that replicas that have received the same set of updates will be
-in the same state, regardless of the order in which they received those updates.
-
-**Why it matters for CRDTs**:
-
-- Provides stronger guarantees than basic eventual consistency
-- Ensures deterministic convergence without requiring consensus
-- Enables formal verification of distributed system behavior
-
-**Components of SEC**:
-
-1. **Eventual Delivery**: Updates made at one replica are eventually delivered to all replicas
-2. **Convergence**: Replicas that have received the same updates are in the same state
-3. **Termination**: All update operations terminate
-
-**How CRDTs achieve SEC**:
-
-- By ensuring operations are commutative, associative, and idempotent
-- By using monotonic semilattices in state-based CRDTs
-- By enforcing causal delivery in operation-based CRDTs
-
 ## How These Properties Work Together
 
 These properties form the mathematical foundation that enables CRDTs to function correctly in distributed environments:
@@ -131,3 +108,6 @@ Understanding these properties helps system designers:
 By leveraging these mathematical properties,
 CRDTs provide a powerful framework
 for building distributed systems that are both highly available and eventually consistent.
+
+> **Note**: For a detailed explanation of Strong Eventual Consistency (SEC) and how it extends the guarantees 
+> of basic eventual consistency, see the [Overview](./01-overview.md#strong-eventual-consistency-sec) document.

@@ -9,14 +9,16 @@ This model ensures **eventual consistency** while tolerating temporary differenc
 
 ## Properties of CvRDTs
 
-CvRDTs rely on several important mathematical properties:
+CvRDTs are implemented as a **semilattice**—a partially ordered set equipped with a join operation.
+They rely on the fundamental CRDT properties
+(described in detail in [Common Properties of CRDTs](./03-common-properties.md)):
 
-- **Implemented as a Semilattice:** A partially ordered set equipped with a join operation.
 - **Idempotent:** Applying the join operation multiple times has no additional effect.
 - **Commutative:** The order of merging does not matter (e.g., A join B = B join A).
 - **Associative:** Grouping of merges does not affect the outcome (e.g., (A join B) join C = A join (B join C)).
 - **Monotonic:** States can only grow or stay the same; they cannot shrink.
-- **Convergence:** All replicas will eventually reach the same state after applying all updates.
+
+These properties ensure that all replicas will eventually reach the same state after applying all updates.
 
 ## Examples of CvRDTs
 
@@ -88,7 +90,7 @@ high-availability goals of distributed systems.
 
 ### Properties of CmRDTs
 
-CmRDTs rely on several important properties to guarantee safe and correct convergence:
+In addition to the fundamental CRDT properties (described in detail in [Common Properties of CRDTs](./03-common-properties.md)), CmRDTs have specific requirements:
 
 - **Causal Delivery:**  
   Operations must be delivered in causal order to ensure consistent state transitions.
@@ -108,19 +110,6 @@ CmRDTs rely on several important properties to guarantee safe and correct conver
       unchanged.
   > - If you apply an update that changes the state, you add that update to the causal history in the order it should be
       applied.
-
-
-- **Idempotent Operations:**  
-  Applying the same operation multiple times has no additional effect.
-
-- **Commutative Operations:**  
-  The order of applying operations does not affect the outcome.
-
-- **Associative Operations:**  
-  Grouping of operations does not impact the final result.
-
-- **Convergence:**  
-  All replicas eventually reach the same state after applying all operations.
 
 ### Two-Phase Operation Execution
 
@@ -203,19 +192,21 @@ replica replays a sequence of causally ordered operations (events) to maintain c
 **Delta-state CRDTs**, or **δ-CRDTs**, are a hybrid model that combines aspects of both CvRDTs and CmRDTs to combine the
 advantages of both approaches:
 
-- Efficiency: Like operation-based CRDTs, δ-CRDTs transmit only incremental changes (deltas), reducing bandwidth usage.
-- Robustness: Like state-based CRDTs, they operate over unreliable communication channels without requiring exactly once
+- **Efficiency**: Like operation-based CRDTs, δ-CRDTs transmit only incremental changes (deltas), reducing bandwidth usage.
+- **Robustness**: Like state-based CRDTs, they operate over unreliable communication channels without requiring exactly once
   delivery.
 
 ### Properties of δ-CRDTs
 
-**Incremental Semilattice:** δ-CRDTs are CvRDTs and inherit all semilattice properties (idempotency, commutativity,
-associativity, monotonicity, convergence).
+**Incremental Semilattice:** δ-CRDTs are essentially CvRDTs that operate on delta-states. 
+They inherit all the fundamental CRDT properties from [Common Properties of CRDTs](./03-common-properties.md) 
+while adding optimizations for delta propagation.
 
 ### δ-mutators
 
-- In controlled environments with reliable infrastructure, CmRDTs may offer better performance, but at the cost of
-  requiring more sophisticated message delivery systems.
+Instead of sending the entire state after each update (as in CvRDTs) or sending individual operations (as in CmRDTs),
+δ-CRDTs generate and transmit only the portion of the state that has changed (the "delta").
+This approach significantly reduces bandwidth usage while maintaining the robustness of state-based CRDTs.
 
 ### Reading Suggestions
 

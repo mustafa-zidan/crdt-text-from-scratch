@@ -15,10 +15,10 @@
 - Optional: diagrams of how they order elements
 
 ### Reading suggestions:
-
+- [Peritext: A CRDT for Collaborative Rich Text Editing](https://dl.acm.org/doi/epdf/10.1145/3555644)
 - [Logoot paper](https://hal.inria.fr/inria-00432368/document)
-- [Automerge docs](https://automerge.org/docs/)
-- [Yjs architecture](https://docs.yjs.dev/overview/architecture)
+- [Automerge docs](https://automerge.org/docs/hello)
+- [Yjs architecture](https://docs.yjs.dev)
 
 ---
 
@@ -51,4 +51,3 @@
 ### Add to:
 
 - [crdt.tech](https://crdt.tech) — great index
-- [CRDTs in Practice](https://queue.acm.org/detail.cfm?id=2851230) — ACM Queue article

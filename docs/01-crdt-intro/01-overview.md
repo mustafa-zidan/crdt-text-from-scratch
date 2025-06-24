@@ -35,7 +35,7 @@ with the guarantee that all replicas will ultimately converge to the same state.
 
 ## Impact on Performance, Scalability, and Availability
 
-- **Improved performance:** Faster writes and lower latency, since nodes don’t wait for global confirmation.
+- **Improved performance:** Faster writes and lower latency, since nodes don't wait for global confirmation.
 - **Increased scalability:** Systems can scale horizontally and operate independently.
 - **High availability:** Systems remain responsive even during network partitions.
 - **Trade-off:** Temporary inconsistencies must be carefully managed to avoid confusing or incorrect user experiences.
@@ -47,11 +47,33 @@ with the guarantee that all replicas will ultimately converge to the same state.
 - **Eventual Consistency:** Prioritizes availability and fault tolerance. Suitable for systems where temporary
   differences are acceptable (e.g., social media, collaborative tools).
 
+## Strong Eventual Consistency (SEC)
+
+**Strong Eventual Consistency** extends the guarantees of basic eventual consistency:
+
+**Definition**: Strong Eventual Consistency guarantees that replicas that have received the same set of updates will be
+in the same state, regardless of the order in which they received those updates.
+
+**Why it matters for CRDTs**:
+
+- Provides stronger guarantees than basic eventual consistency
+- Ensures deterministic convergence without requiring consensus
+- Enables formal verification of distributed system behavior
+
+**Components of SEC**:
+
+1. **Eventual Delivery**: Updates made at one replica are eventually delivered to all replicas
+2. **Convergence**: Replicas that have received the same updates are in the same state
+3. **Termination**: All update operations terminate
+
 ## Implementing Eventual Consistency
 
 One common approach is through **Conflict-Free Replicated Data Types (CRDTs)**—data structures designed for safe,
 concurrent updates across distributed systems. These ensure all replicas reach the same state automatically, even if
 updates arrive in different orders or at different times.
+
+CRDTs achieve Strong Eventual Consistency by ensuring operations are commutative, associative, and idempotent, using
+monotonic semilattices in state-based CRDTs, and enforcing causal delivery in operation-based CRDTs.
 
 ## Challenges of Eventual Consistency
 
@@ -73,17 +95,12 @@ independently, while still ensuring that all versions eventually converge.
 - Conflicts are resolved using algorithms that merge changes safely.
 - The system guarantees convergence regardless of the order in which updates are received.
 
-### CRDT Properties
+### Key CRDT Concepts
 
-- **Convergence:** All replicas eventually reach the same state.
-- **Idempotency:** Reapplying the same operation multiple times has no additional effect.
-- **Commutativity:** The order of operations doesn’t affect the final outcome.
-- **Associativity:** Grouping of operations doesn’t impact the result.
+CRDTs have several important properties and come in different types. These are covered in detail in:
 
-### CRDT Types
-
-- **State-based CRDTs (CvRDTs):** Merge the entire state of replicas to resolve conflicts.
-- **Operation-based CRDTs (CmRDTs):** Send operations to other replicas, which apply them to their local state.
+- [Common Properties of CRDTs](./03-common-properties.md) - Learn about commutativity, associativity, idempotency, and monotonicity.
+- [CRDT Models](./02-crdt-models.md) - Explore state-based CRDTs (CvRDTs), operation-based CRDTs (CmRDTs), and delta-state CRDTs (δ-CRDTs).
 
 ### Reading suggestions:
 
