@@ -1,16 +1,16 @@
 /**
  * CRDT Simulation: Concurrent Add/Add Conflict Resolution
- * 
- * This Kotlin script demonstrates how different CRDT models handle concurrent 
+ *
+ * This Kotlin script demonstrates how different CRDT models handle concurrent
  * insertions by different nodes at the same logical position.
- * 
+ *
  * Scenario:
  * - Two replicas (Node A and Node B) start with identical state: [A, B, C]
  * - Both concurrently insert different values ("X" and "Y") at index 2
- * 
+ *
  * Three CRDT Models are demonstrated:
  * 1. CvRDT (Commutative Replicated Data Type) - Set-based approach
- * 2. CmRDT (Commutative Monotonic Replicated Data Type) - Operation-based approach  
+ * 2. CmRDT (Commutative Monotonic Replicated Data Type) - Operation-based approach
  * 3. Sequence CRDT - Position-based approach with Operational Transformation
  */
 
@@ -23,23 +23,31 @@ data class CvRDTItem(val value: String, val nodeId: String, val timestamp: Long)
 
 class CvRDTList(private val nodeId: String, initial: List<String> = emptyList()) {
     private val items = mutableSetOf<CvRDTItem>()
-    
+
     init {
-        initial.forEachIndexed { index, value -> 
+        initial.forEachIndexed { index, value ->
             items.add(CvRDTItem(value, nodeId, index.toLong()))
         }
     }
-    
+
     fun insert(value: String, timestamp: Long): CvRDTItem {
         val item = CvRDTItem(value, nodeId, timestamp)
         items.add(item)
         return item
     }
-    
+
     fun merge(other: CvRDTList) {
-        items.addAll(other.items)
+        // Merge while deduplicating items based on value and timestamp only
+        val otherItems = other.items.toMutableSet()
+        otherItems.removeAll { item ->
+            // Check if we already have an item with the same value and timestamp
+            items.any { existing ->
+                existing.value == item.value && existing.timestamp == item.timestamp
+            }
+        }
+        items.addAll(otherItems)
     }
-    
+
     fun printState() {
         // Sort by timestamp to show order
         val sortedItems = items.sortedBy { it.timestamp }
@@ -49,7 +57,7 @@ class CvRDTList(private val nodeId: String, initial: List<String> = emptyList())
 }
 
 val cvrdtA = CvRDTList("A", listOf("A", "B", "C"))
-val cvrdtB = CvRDTList("B", listOf("A", "B", "C"))
+val cvrdtB = CvRDTList("B")
 
 // Both nodes insert at same logical time (timestamp)
 val itemA = cvrdtA.insert("X", 100)
@@ -74,14 +82,14 @@ data class Operation(val value: String, val originalIndex: Int, val nodeId: Stri
 class CmRDTList(private val nodeId: String, initial: List<String> = emptyList()) {
     private val list = initial.toMutableList()
     private val history = mutableListOf<Operation>()
-    
+
     fun insert(value: String, index: Int, timestamp: Long): Operation {
         return Operation(value, index, nodeId, timestamp).also { op ->
             list.add(index, op.value)
             history.add(op)
         }
     }
-    
+
     // Simple merge - just append operations (in practice would use proper commutativity rules)
     fun merge(other: CmRDTList) {
         other.history.forEach { op ->
@@ -92,7 +100,7 @@ class CmRDTList(private val nodeId: String, initial: List<String> = emptyList())
             }
         }
     }
-    
+
     fun printState() = println("[$nodeId] List: $list")
 }
 
@@ -127,25 +135,25 @@ data class SequenceOperation(
 class SequenceCRDTList(private val nodeId: String, initial: List<String> = emptyList()) {
     private val list = initial.toMutableList()
     private val history = mutableListOf<SequenceOperation>()
-    
+
     fun insert(value: String, index: Int): SequenceOperation {
         return SequenceOperation(value, index, nodeId)
             .also { op -> applyTransformed(op) }
     }
-    
+
     fun receive(remote: SequenceOperation) {
         remote.transformAgainst(history).also { transformedOp ->
             applyTransformed(transformedOp)
         }
     }
-    
+
     private fun applyTransformed(op: SequenceOperation) {
         val boundedIndex = op.transformedIndex.coerceIn(0, list.size)
         val finalOp = op.copy(transformedIndex = boundedIndex)
         list.add(boundedIndex, finalOp.value)
         history.add(finalOp)
     }
-    
+
     private fun SequenceOperation.transformAgainst(history: List<SequenceOperation>): SequenceOperation {
         val newIndex = history.fold(originalIndex) { acc, local ->
             when {
@@ -156,7 +164,7 @@ class SequenceCRDTList(private val nodeId: String, initial: List<String> = empty
         }
         return copy(transformedIndex = newIndex)
     }
-    
+
     fun printState() = println("[$nodeId] List: $list")
 }
 
