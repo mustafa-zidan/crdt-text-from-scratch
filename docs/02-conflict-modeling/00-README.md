@@ -1,4 +1,4 @@
-# 🔥 Conflict Modeling in CRDTs
+# Conflict Modeling in CRDTs
 
 This document outlines key conflict scenarios in distributed systems and how various CRDT types approach them. It serves
 as a simulation journal and pattern catalog.
@@ -25,10 +25,12 @@ as a simulation journal and pattern catalog.
 
 ## Why Conflict Modeling Matters
 
-> What to reflect on:
-> - CRDTs promise convergence *without coordination*
-> - Understanding *how* they do this requires modeling **what goes wrong**
-> - You don’t design robustness—you design for the **failure path**
+- CRDTs promise convergence without coordination, but this only holds under specific failure assumptions. 
+- Modeling conflict is essential to understand and verify how CRDTs behave under delay, concurrency, and faults. 
+- Real-world systems face out-of-order delivery, partitions, and crashes—scenarios where correctness must still hold. 
+- Robustness isn’t an afterthought; it’s a result of designing for the failure path from the start. 
+- You gain confidence in a CRDT by stress-testing it against conflict scenarios, not by assuming the happy path. 
+- Key idea: Convergence is only meaningful when conflict actually happens.
 
 ### Mental hook:
 
@@ -37,6 +39,34 @@ as a simulation journal and pattern catalog.
 ---
 
 ## Modeling Framework
+
+### Node Model
+* The Node is represented with an object that contain a list of CRDT objects along with receive operations and conflict resolution mechanisms
+* Each Node contain a history (op log) of all the events received or the transformations done to objects (can be considered a transformation event) by the node.
+
+### Delivery Mode
+* Data transported asynchronously and Out-of-order between replicas with a tiebreaker to avoid a total order tracking
+* Duplicates are *implicitly* handled only if transformation is commutative across deliveries; however, without dedup, **duplicate delivery ⇒ duplicate inserts**.
+
+### Time & Causality
+- **Clocking:** None explicitly (no Lamport or vector clocks).
+- **Causality capture:** Indirect via `transformAgainst(history)` which replays prior applied ops.
+- **Concurrency detection:** Two ops are “concurrent” if they target the same `originalIndex` without a causal relation.
+- **Tie-break rule:** If `local.transformedIndex == acc && local.nodeId < this.nodeId` then shift right (+1).  
+  This yields a deterministic total order among concurrent inserts at the same position.
+
+### Convergence & Correctness Claims
+- **Convergence (as coded):** For concurrent inserts at the same position, replicas converge by consistent tie-break (`nodeId`).
+- **Preconditions needed for broader correctness:**
+    - **Dedup:** introduce unique op IDs and a `seen` set; otherwise duplicates diverge.
+    - **Causal readiness/buffering:** if later you add deletes/moves, you’ll need dependencies or causal checks.
+    - **History availability:** `transformAgainst(history)` assumes prior ops are present and in the same effective order.
+
+### Invariants / Safety Properties
+- **I1 (Deterministic ordering of concurrent equal-index inserts):** With a stable, total order on `nodeId`, all replicas compute the same insertion indices after transforming against the same prefix.
+- **I2 (Index bounding):** `coerceIn(0, list.size)` prevents OOB, but can mask logic errors by silently retargeting.
+
+
 
 > What to define here:
 > - What your **node model** is (e.g., local state + op log)
@@ -152,27 +182,28 @@ as a simulation journal and pattern catalog.
 
 ---
 
-## 📊 Pattern Summary Matrix
+## Pattern Summary Matrix
 
 | Conflict Type         | CvRDT | CmRDT | Delta | OR-Set | RGA | Logoot | LSEQ |
 |-----------------------|-------|-------|-------|--------|-----|--------|------|
-| Add/Add               | ✅     | ✅     | ✅     | ✅      | 🟡  | ✅      | ✅    |
-| Add/Remove            | ❌     | ✅     | ✅     | ✅      | ✅   | 🟡     | ✅    |
-| Out-of-Order Delivery | ✅     | ❌*    | ✅     | ✅      | ✅   | ✅      | ✅    |
-| Network Partition     | ✅     | ❌*    | ✅     | ✅      | ✅   | ✅      | ✅    |
-| Tombstone Drift       | ✅     | ✅     | ✅     | 🟡     | ❌   | 🟡     | 🟡   |
-| Duplicate Delivery    | ✅     | ✅     | ✅     | ✅      | ✅   | ✅      | ✅    |
-| Causal Violation      | ✅     | ❌     | ✅     | 🟡     | ✅   | ✅      | ✅    |
-| Structural Conflict   | ❌     | ✅     | ✅     | ❌      | ✅   | ✅      | ✅    |
+| Add/Add               | ✔     | ✔     | ✔     | ✔      | ~   | ✔      | ✔    |
+| Add/Remove            | ✖     | ✔     | ✔     | ✔      | ✔   | ~      | ✔    |
+| Out-of-Order Delivery | ✔     | ✖*    | ✔     | ✔      | ✔   | ✔      | ✔    |
+| Network Partition     | ✔     | ✖*    | ✔     | ✔      | ✔   | ✔      | ✔    |
+| Tombstone Drift       | ✔     | ✔     | ✔     | ~      | ✖   | ~      | ~    |
+| Duplicate Delivery    | ✔     | ✔     | ✔     | ✔      | ✔   | ✔      | ✔    |
+| Causal Violation      | ✔     | ✖     | ✔     | ~      | ✔   | ✔      | ✔    |
+| Structural Conflict   | ✖     | ✔     | ✔     | ✖      | ✔   | ✔      | ✔    |
 
-🟡 = Depends on implementation
-❌ = Inherently not supported without extra mechanisms
+Legend:
+- `~` = Depends on implementation
+- `✖` = Inherently not supported without extra mechanisms
 
 ---
 
-## ✍️ Lessons Learned
+## Lessons Learned
 
-> 🔍 Questions to reflect on:
+> Questions to reflect on:
 > - Which types of CRDTs are most sensitive to conflict ordering?
 > - How do merge strategies scale with complexity?
 > - What assumptions am I making about delivery guarantees?
