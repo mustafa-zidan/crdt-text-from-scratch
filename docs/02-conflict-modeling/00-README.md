@@ -41,14 +41,17 @@ as a simulation journal and pattern catalog.
 ## Modeling Framework
 
 ### Node Model
+
 * The Node is represented with an object that contain a list of CRDT objects along with receive operations and conflict resolution mechanisms
 * Each Node contain a history (op log) of all the events received or the transformations done to objects (can be considered a transformation event) by the node.
 
 ### Delivery Mode
+
 * Data transported asynchronously and Out-of-order between replicas with a tiebreaker to avoid a total order tracking
 * Duplicates are *implicitly* handled only if transformation is commutative across deliveries; however, without dedup, **duplicate delivery ⇒ duplicate inserts**.
 
 ### Time & Causality
+
 - **Clocking:** None explicitly (no Lamport or vector clocks).
 - **Causality capture:** Indirect via `transformAgainst(history)` which replays prior applied ops.
 - **Concurrency detection:** Two ops are “concurrent” if they target the same `originalIndex` without a causal relation.
@@ -56,6 +59,7 @@ as a simulation journal and pattern catalog.
   This yields a deterministic total order among concurrent inserts at the same position.
 
 ### Convergence & Correctness Claims
+
 - **Convergence (as coded):** For concurrent inserts at the same position, replicas converge by consistent tie-break (`nodeId`).
 - **Preconditions needed for broader correctness:**
     - **Dedup:** introduce unique op IDs and a `seen` set; otherwise duplicates diverge.
@@ -63,15 +67,9 @@ as a simulation journal and pattern catalog.
     - **History availability:** `transformAgainst(history)` assumes prior ops are present and in the same effective order.
 
 ### Invariants / Safety Properties
+
 - **I1 (Deterministic ordering of concurrent equal-index inserts):** With a stable, total order on `nodeId`, all replicas compute the same insertion indices after transforming against the same prefix.
 - **I2 (Index bounding):** `coerceIn(0, list.size)` prevents OOB, but can mask logic errors by silently retargeting.
-
-
-
-> What to define here:
-> - What your **node model** is (e.g., local state + op log)
-> - What your **delivery model** is (e.g., async, unreliable, no total ordering)
-> - How you simulate **time** and **causality** (e.g., vector clocks, timestamps)
 
 ### Mental hook:
 

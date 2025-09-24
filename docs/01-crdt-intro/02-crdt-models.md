@@ -1,4 +1,4 @@
-# State-based CRDTs (CvRDTs)
+﻿#  State-based CRDTs (CvRDTs)
 
 **State-based CRDTs**, also known as **CvRDTs** (Convergent Replicated Data Types), are a class of CRDTs that use a 
 **full-state synchronization** approach.  

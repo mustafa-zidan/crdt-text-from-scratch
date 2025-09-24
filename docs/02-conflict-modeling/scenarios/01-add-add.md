@@ -2,7 +2,7 @@
 
 ### Problem Definition
 
-This problem occurs in CRDT-based list or map structures when two replicas independently and concurrently insert the **same value** at the **same logical key or index**.
+This problem occurs in CRDT-based list or map structures when two replicas independently and concurrently insert **values** at the **same logical key or index**.
 
 #### Scenario
 
